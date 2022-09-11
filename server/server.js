@@ -31,6 +31,9 @@ app.get("/get", (_req, res) => {
 app.get("/get-title", (_req, res) => {
 	let title = [];
 	let text = [];
+	let author = [];
+	let date = [];
+
 	const $ = cheerio.load(page);
 	$(".col-sm-5").each(
 		(i, element) =>
@@ -45,11 +48,24 @@ app.get("/get-title", (_req, res) => {
 				.text()
 				.replace(/^\s+|\s+$/gm, ""))
 	);
+	$(".col-sm-6:even").each(
+		(i, element) =>
+			(author[i] = $(element)
+				.text()
+				.replace(/^\s+|\s+$/gm, "")
+				.split(" ")[2])
+	);
+	$(".col-sm-6:even").each(
+		(i, element) =>
+			(date[i] = $(element)
+				.text()
+				.replace(/^\s+|\s+$/gm, "")
+				.split("at ")[1])
+	);
 
-	console.log(title.length);
-	console.log(text.length);
 	let arrobj = [];
-	for (let i = 0; i < title.length; i++) arrobj.push({ title: title[i], text: text[i] });
+	for (let i = 0; i < title.length; i++)
+		arrobj.push({ author: author[i], title: title[i], text: text[i], date: date[i] });
 	console.log(arrobj);
 });
 
