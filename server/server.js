@@ -13,7 +13,7 @@ app.get("/api", (_req, res) => {
 
 app.get("/data", (_req, res) => {
 	axios({
-		url: "http://strongerw2ise74v3duebgsvug4mehyhlpa7f6kfwnas7zofs3kov7yd.onion/all",
+		url: "http://rfyb5tlhiqtiavwhikdlvb3fumxgqwtg2naanxtiqibidqlox5vispqd.onion/index.php",
 		proxy: {
 			host: "localhost",
 			port: 8118,
@@ -22,10 +22,10 @@ app.get("/data", (_req, res) => {
 	res.send();
 });
 
-// const clientPath = path.join(process.cwd(), "client/");
-// app.get("*", (_req, res) => {
-// 	res.sendFile(path.join(clientPath, "index.html"));
-// });
+// const clientPath = path.join(process.cwd(), "./index.html");
+app.get("*", (_req, res) => {
+	res.sendFile(path.join(process.cwd(), "./index.html"));
+});
 
 const port = process.env.PORT || 4000;
 app.listen(port, () => {
