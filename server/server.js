@@ -28,45 +28,24 @@ app.get("/get", (_req, res) => {
 	res.sendFile(path.join(process.cwd(), "./main.html"));
 });
 
-app.get("/get-title", (_req, res) => {
+app.get("/get-paste", (_req, res) => {
 	let title = [];
 	let text = [];
 	let author = [];
 	let date = [];
 
 	const $ = cheerio.load(page);
-	$(".col-sm-5").each(
-		(i, element) =>
-			(title[i] = $(element)
-				.text()
-				.replace(/^\s+|\s+$/gm, "")
-				.replace("\n", " "))
-	);
-	$(".text").each(
-		(i, element) =>
-			(text[i] = $(element)
-				.text()
-				.replace(/^\s+|\s+$/gm, ""))
-	);
-	$(".col-sm-6:even").each(
-		(i, element) =>
-			(author[i] = $(element)
-				.text()
-				.replace(/^\s+|\s+$/gm, "")
-				.split(" ")[2])
-	);
-	$(".col-sm-6:even").each(
-		(i, element) =>
-			(date[i] = $(element)
-				.text()
-				.replace(/^\s+|\s+$/gm, "")
-				.split("at ")[1])
-	);
+	$(".col-sm-5").each((i, element) => (title[i] = $(element).text().trimStart().trimEnd()));
+	$(".text").each((i, element) => (text[i] = $(element).text().trimStart().trimEnd()));
+	$(".col-sm-6:even").each((i, element) => (author[i] = $(element).text().split(" ")[2]));
+	$(".col-sm-6:even").each((i, element) => (date[i] = $(element).text().split("at ")[1]));
 
 	let arrobj = [];
-	for (let i = 0; i < title.length; i++)
+	for (let i = 0; i < title.length; i++) {
 		arrobj.push({ author: author[i], title: title[i], text: text[i], date: date[i] });
+	}
 	console.log(arrobj);
+	res.send(arrobj);
 });
 
 const port = process.env.PORT || 4000;
