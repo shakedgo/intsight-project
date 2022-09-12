@@ -3,7 +3,7 @@ const cors = require("cors");
 const path = require("path");
 const axios = require("axios");
 const cheerio = require("cheerio");
-const page = require("./index.js");
+const chrono = require("chrono-node");
 
 const app = express();
 app.use(express.json());
@@ -18,37 +18,46 @@ app.get("/get-paste", (_req, res) => {
 		let author = [];
 		let title = [];
 		let date = [];
-		let page;
-		await axios({
+		let text = [];
+		let ids = [];
+		let page = await axios({
 			url: "http://paste2vljvhmwq5zy33re2hzu4fisgqsohufgbljqomib2brzx3q4mid.onion/lists",
 			proxy: {
 				host: "localhost",
 				port: 8118,
 			},
-		}).then((res) => (page = res.data));
+		});
 
-		cheerio.load(page);
-		const $ = cheerio.load(page);
-		$(".first").each((i, element) => {
-			title.push($(element).text().trimStart(s).trimEnd());
+		const $ = cheerio.load(page.data);
+		$(".first").each(async (i, element) => {
+			title.push($(element).text().trimStart().trimEnd());
 			$(element)
 				.siblings("td")
 				.each((siblingIndex, sibling) => {
 					if (siblingIndex === 0) author.push($(sibling).text());
-					if (siblingIndex === 2) date.push($(sibling).text());
+					if (siblingIndex === 2) {
+						date.push(chrono.parseDate($(sibling).text()).toUTCString());
+					}
 				});
+			const id = $(element).find("a").attr("href").split("/")[4];
+			let textFetch = await axios({
+				url: `http://paste2vljvhmwq5zy33re2hzu4fisgqsohufgbljqomib2brzx3q4mid.onion/view/raw/${id}`,
+				proxy: {
+					host: "localhost",
+					port: 8118,
+				},
+			});
+			text.push(textFetch.data);
+			ids.push(id);
+
+			let arrobj = [];
+			if (text.length === 50) {
+				for (let i = 0; i < title.length; i++) {
+					arrobj.push({ id: ids[i], author: author[i], title: title[i], text: text[i], date: date[i] });
+				}
+				res.send(arrobj);
+			}
 		});
-
-		console.log(author[1]);
-		console.log(title[1]);
-		console.log(date[1]);
-
-		// let arrobj = [];
-		// for (let i = 0; i < title.length; i++) {
-		// 	arrobj.push({ author: author[i], title: title[i], text: text[i], date: date[i] });
-		// }
-		// console.log(arrobj);
-		// res.send(arrobj);
 	};
 	fetch();
 });
@@ -56,26 +65,6 @@ app.get("/get-paste", (_req, res) => {
 app.get("/get", (_req, res) => {
 	res.sendFile(path.join(process.cwd(), "./main.html"));
 });
-
-// app.get("/get-paste-old", (_req, res) => {
-// 	let title = [];
-// 	let text = [];
-// 	let author = [];
-// 	let date = [];
-
-// 	const $ = cheerio.load(page);
-// 	$(".col-sm-5").each((i, element) => (title[i] = $(element).text().trimStart().trimEnd()));
-// 	$(".text").each((i, element) => (text[i] = $(element).text().trimStart().trimEnd()));
-// 	$(".col-sm-6:even").each((i, element) => (author[i] = $(element).text().split(" ")[2]));
-// 	$(".col-sm-6:even").each((i, element) => (date[i] = $(element).text().split("at ")[1]));
-
-// 	let arrobj = [];
-// 	for (let i = 0; i < title.length; i++) {
-// 		arrobj.push({ author: author[i], title: title[i], text: text[i], date: date[i] });
-// 	}
-// 	console.log(arrobj);
-// 	res.send(arrobj);
-// });
 
 const port = process.env.PORT || 4000;
 app.listen(port, () => {

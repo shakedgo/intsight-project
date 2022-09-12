@@ -14,6 +14,7 @@ export default function App() {
 					{pastes.map((paste) => {
 						return (
 							<div key={count++}>
+								<div>id: {paste.id}</div>
 								<div>Author: {paste.author}</div>
 								<div>Title: {paste.title}</div>
 								<div>Text: {paste.text}</div>
