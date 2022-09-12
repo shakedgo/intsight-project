@@ -1,0 +1,12 @@
+.paste {
+	white-space: pre-wrap;
+	padding: 20px;
+	color: red;
+	background-color: yellow;
+	.pastebox {
+		font-size: 14px;
+		margin: 20px;
+		padding: 10px;
+		background-color: lightgray;
+	}
+}

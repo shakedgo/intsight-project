@@ -17,7 +17,10 @@ export default function App() {
 								<div>id: {paste.id}</div>
 								<div>Author: {paste.author}</div>
 								<div>Title: {paste.title}</div>
-								<div>Text: {paste.text}</div>
+								<div>
+									Text:
+									<div className="pastebox">{paste.text}</div>
+								</div>
 								<div>Date: {paste.date}</div>
 								<br />
 							</div>
