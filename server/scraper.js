@@ -4,6 +4,7 @@ const chrono = require("chrono-node");
 const { MongoClient, ServerApiVersion } = require("mongodb");
 
 const uri = "mongodb+srv://shakedgo:1234567890@cluster0.7rxdu3v.mongodb.net/?retryWrites=true&w=majority";
+// should be in .env or vault if was super secret.
 const client = new MongoClient(uri, {
 	useNewUrlParser: true,
 	useUnifiedTopology: true,
@@ -63,8 +64,10 @@ const scrape = async () => {
 				);
 			}
 			console.log("Added pastes to database");
+			console.log("disconnected from database");
 			return "Added pastes to database";
 		}
 	});
 };
+client.close();
 module.exports = { scrape };

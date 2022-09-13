@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 export default function App() {
 	const [pastes, setPastes] = useState();
 	useEffect(() => {
-		axios.get("/get-paste").then((res) => setPastes(res.data));
+		axios.get("/get-pastes").then((res) => setPastes(res.data));
 	}, []);
 	let count = 0;
 	return (
