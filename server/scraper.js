@@ -10,7 +10,6 @@ const client = new MongoClient(uri, {
 	useUnifiedTopology: true,
 	serverApi: ServerApiVersion.v1,
 });
-client.connect();
 
 const scrape = async () => {
 	let author = [];
@@ -48,26 +47,27 @@ const scrape = async () => {
 		text.push(textFetch.data);
 		ids.push(id);
 		if (text.length === 50) {
-			for (let i = 0; i < title.length; i++) {
-				const collection = client.db("DarkPaste").collection("pastes");
-				collection.updateOne(
-					{ _id: ids[i] },
-					{
-						$set: {
-							author: author[i],
-							title: title[i],
-							text: text[i],
-							date: date[i],
+			client.connect(async (err) => {
+				if (err) throw err;
+				for (let i = 0; i < title.length; i++) {
+					const collection = client.db("DarkPaste").collection("pastes");
+					await collection.updateOne(
+						{ _id: ids[i] },
+						{
+							$set: {
+								author: author[i],
+								title: title[i],
+								text: text[i],
+								date: date[i],
+							},
 						},
-					},
-					{ upsert: true }
-				);
-			}
-			console.log("Added pastes to database");
-			console.log("disconnected from database");
-			return "Added pastes to database";
+						{ upsert: true }
+					);
+				}
+				client.close();
+				return "Added pastes to database";
+			});
 		}
 	});
 };
-client.close();
 module.exports = { scrape };

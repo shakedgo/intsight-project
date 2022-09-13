@@ -11,11 +11,14 @@ export default function App() {
 	return (
 		<>
 			{pastes !== undefined ? (
-				<div className="post">
-					{pastes.map((paste) => {
-						return <PasteCard paste={paste} />;
-					})}
-				</div>
+				<>
+					<button onClick={() => axios.get("/scrape-paste").then()}></button>
+					<div className="post">
+						{pastes.map((paste) => {
+							return <PasteCard paste={paste} />;
+						})}
+					</div>
+				</>
 			) : (
 				<h1>Loading</h1>
 			)}
