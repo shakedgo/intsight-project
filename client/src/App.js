@@ -4,22 +4,34 @@ import PasteCard from "./PasteCard";
 
 export default function App() {
 	const [pastes, setPastes] = useState();
-	const [paste, reloadPaste] = useState();
+	const [searchTerm, setSearchTerm] = useState();
+	const [allPastes, setAllPastes] = useState();
 
 	useEffect(() => {
-		axios.get("/get-pastes").then((res) => setPastes(res.data));
-	}, [paste]);
+		axios.get("/get-pastes").then((res) => {
+			setPastes(res.data);
+			setAllPastes(res.data);
+		});
+	}, []);
+
+	useEffect(() => {
+		const search = () => {
+			let newPaste = [];
+			allPastes.forEach((res) => {
+				if (res.title.includes(searchTerm)) newPaste.push(res);
+			});
+			setPastes(newPaste);
+		};
+		const timeoutId = setTimeout(() => {
+			if (searchTerm !== undefined) search();
+		}, 300);
+		return () => clearTimeout(timeoutId);
+	}, [searchTerm, allPastes]);
 	return (
 		<>
 			{pastes !== undefined ? (
 				<div className="post">
-					<button
-						onClick={() => {
-							axios.get("/scrape-paste").then((res) => reloadPaste(res));
-						}}
-					>
-						Reload data
-					</button>
+					<input key="inpt" type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
 					{pastes.map((paste) => {
 						return <PasteCard paste={paste} />;
 					})}

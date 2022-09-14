@@ -6,7 +6,12 @@ body,
 	width: 100%;
 }
 
-body {
+.post {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	// width: fit-content;
 	background-color: green;
 	.paste {
 		white-space: pre-wrap;
