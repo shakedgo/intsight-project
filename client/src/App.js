@@ -4,21 +4,26 @@ import PasteCard from "./PasteCard";
 
 export default function App() {
 	const [pastes, setPastes] = useState();
+	const [paste, reloadPaste] = useState();
 
 	useEffect(() => {
 		axios.get("/get-pastes").then((res) => setPastes(res.data));
-	}, []);
+	}, [paste]);
 	return (
 		<>
 			{pastes !== undefined ? (
-				<>
-					<button onClick={() => axios.get("/scrape-paste").then()}></button>
-					<div className="post">
-						{pastes.map((paste) => {
-							return <PasteCard paste={paste} />;
-						})}
-					</div>
-				</>
+				<div className="post">
+					<button
+						onClick={() => {
+							axios.get("/scrape-paste").then((res) => reloadPaste(res));
+						}}
+					>
+						Reload data
+					</button>
+					{pastes.map((paste) => {
+						return <PasteCard paste={paste} />;
+					})}
+				</div>
 			) : (
 				<h1>Loading</h1>
 			)}
